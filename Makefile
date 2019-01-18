@@ -1,17 +1,27 @@
-BOT_BIN = bin/cfdyndns
+FILES = $$(find . -type f -name "*.go")
+PACKAGES = $$(go list ./... )
+BIN = bin/cfdyndns
 
 export GO111MODULE=on
 
-default: clean build
+default: clean test build
 
-build: $(BOT_BIN)
+all: clean fmt test build
 
-$(BOT_BIN):
+build: $(BIN)
+
+$(BIN):
 	go build -v \
 	        -tags release \
-        	-ldflags="-X main.version=1.1" \
-	        -o $(BOT_BIN) \
+		-ldflags="-X main.Version=0.1" \
+	        -o $(BIN) \
 	        cmd/cfdyndns/cfdyndns.go
 
 clean:
 	rm -rfv bin
+
+fmt:
+	gofmt -l -s -w $(FILES)
+
+test:
+	go test -race -cover $(PACKAGES)
