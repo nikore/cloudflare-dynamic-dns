@@ -7,9 +7,9 @@ import (
 )
 
 type cfDNSUpdater struct {
-	client *cloudflare.API
+	client   *cloudflare.API
 	zoneName string
-	records []string
+	records  []string
 }
 
 func NewDNSUpdater(apiKey string, email string) (*cfDNSUpdater, error) {

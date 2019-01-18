@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-
 func TestPublicIp(t *testing.T) {
 	TestingT(t)
 }
