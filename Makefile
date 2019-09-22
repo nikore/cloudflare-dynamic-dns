@@ -3,6 +3,7 @@ PACKAGES = $$(go list ./... )
 BIN = bin/cfdyndns
 
 export GO111MODULE=on
+export CGO_ENABLED=0
 
 default: clean test build
 
