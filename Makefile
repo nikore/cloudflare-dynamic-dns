@@ -25,4 +25,4 @@ fmt:
 	gofmt -l -s -w $(FILES)
 
 test:
-	go test -race -cover $(PACKAGES)
+	go test -cover $(PACKAGES)
