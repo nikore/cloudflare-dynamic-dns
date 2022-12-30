@@ -1,9 +1,10 @@
 package iputils_test
 
 import (
+	"testing"
+
 	"github.com/nikore/cloudflare-dynamic-dns/pkg/iputils"
 	. "gopkg.in/check.v1"
-	"testing"
 )
 
 func TestPublicIp(t *testing.T) {

@@ -1,9 +1,11 @@
 package cloudflare
 
 import (
+	"context"
 	"fmt"
-	"github.com/cloudflare/cloudflare-go"
 	"log"
+
+	"github.com/cloudflare/cloudflare-go"
 )
 
 type cfDNSUpdater struct {
@@ -35,8 +37,8 @@ func (c *cfDNSUpdater) RecordList(records []string) *cfDNSUpdater {
 	return c
 }
 
-func (c *cfDNSUpdater) checkAndUpdate(currentIp string, name string, zoneID string) error {
-	records, err := c.client.DNSRecords(zoneID, cloudflare.DNSRecord{Type: "A", Name: name})
+func (c *cfDNSUpdater) checkAndUpdate(ctx context.Context, currentIp string, name string, zoneID string) error {
+	records, err := c.client.DNSRecords(ctx, zoneID, cloudflare.DNSRecord{Type: "A", Name: name})
 	if err != nil {
 		return err
 	}
@@ -49,7 +51,7 @@ func (c *cfDNSUpdater) checkAndUpdate(currentIp string, name string, zoneID stri
 
 	if record.Content != currentIp {
 		record.Content = currentIp
-		err := c.client.UpdateDNSRecord(zoneID, record.ID, record)
+		err := c.client.UpdateDNSRecord(ctx, zoneID, record.ID, record)
 		if err != nil {
 			return err
 		}
@@ -61,20 +63,20 @@ func (c *cfDNSUpdater) checkAndUpdate(currentIp string, name string, zoneID stri
 	return nil
 }
 
-func (c *cfDNSUpdater) Run(currentIp string) error {
+func (c *cfDNSUpdater) Run(ctx context.Context, currentIp string) error {
 	id, err := c.client.ZoneIDByName(c.zoneName)
 	if err != nil {
 		return err
 	}
 
-	err = c.checkAndUpdate(currentIp, c.zoneName, id)
+	err = c.checkAndUpdate(ctx, currentIp, c.zoneName, id)
 	if err != nil {
 		return err
 	}
 
 	for _, r := range c.records {
 		name := fmt.Sprintf("%s.%s", r, c.zoneName)
-		err = c.checkAndUpdate(currentIp, name, id)
+		err = c.checkAndUpdate(ctx, currentIp, name, id)
 		if err != nil {
 			return err
 		}
