@@ -11,7 +11,7 @@ RUN go mod download
 
 COPY . .
 
-RUN make clean all
+RUN make clean build
 
 FROM gcr.io/distroless/base:nonroot
 USER 65532:65532

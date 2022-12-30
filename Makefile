@@ -38,7 +38,7 @@ test:
 
 .PHONY: docker-build
 docker-build:
-	docker build -t cfdyndns:${VERSION} .
+	docker buildx build --tag cfdyndns:${VERSION} --platform=linux/amd64,linux/arm64 .
 	docker tag ${DOCKER_REGISTRY}cfdyndns:${VERSION} ${DOCKER_REGISTRY}cfdyndns:latest
 
 .PHONY: push-image
