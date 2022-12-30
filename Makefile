@@ -10,7 +10,7 @@ export CGO_ENABLED=0
 default: clean test build
 
 .PHONY: all
-all: clean fmt test build
+all: clean lint test build
 
 .PHONY: build
 build: $(BIN)
@@ -27,8 +27,9 @@ $(BIN):
 clean:
 	rm -rfv bin
 
-.PHONY: fmt
-fmt:
+.PHONY: lint
+lint:
+	go vet $(PACKAGES)
 	gofmt -l -s -w $(FILES)
 
 .PHONY: test
@@ -37,5 +38,16 @@ test:
 
 .PHONY: docker-build
 docker-build:
-	docker build -t ${DOCKER_REGISTRY}cfdyndns:${VERSION} .
+	docker build -t cfdyndns:${VERSION} .
 	docker tag ${DOCKER_REGISTRY}cfdyndns:${VERSION} ${DOCKER_REGISTRY}cfdyndns:latest
+
+.PHONY: push-image
+push-image:
+	@if test "$(DOCKER_REGISTRY)" = "" ; then \
+        echo "DOCKER_REGISTRY but must be set in order to continue"; \
+        exit 1; \
+	fi
+	docker tag cfdyndns:${VERSION} ${DOCKER_REGISTRY}/cfdyndns:${VERSION}
+	docker tag cfdyndns:${VERSION} ${DOCKER_REGISTRY}/cfdyndns:latest
+	docker push ${DOCKER_REGISTRY}/cfdyndns:${VERSION}
+	docker push ${DOCKER_REGISTRY}/cfdyndns:latest
